@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Banking Products Dashboard</title>
+
+    <style>
+      :root {
+        /* Palette: warm taupe, sandy beige, oatmeal, vanilla cream, soft linen, ivory */
+        --taupe: #9a8472;
+        --sand: #c8b39a;
+        --oat: #e0d1b8;
+        --cream: #efe3ce;
+        --linen: #f6f0e6;
+        --ivory: #faf7f2;
+        --brown: #6b5646;
+        --cocoa: #3a2e25;
+        --deep: #2b2018;
+        --bg: var(--ivory);
+        --surface: var(--linen);
+        --surface-2: var(--cream);
+        --text: var(--cocoa);
+        --heading: var(--deep);
+        --muted: #6b5a4c;
+        --border: #d9c9b0;
+        --border-strong: #9a8472;
+        --primary: var(--brown);
+        --on-primary: var(--ivory);
+        --ring: var(--brown);
+        --shadow:
+          0 1px 2px rgba(90, 70, 50, 0.08), 0 10px 26px rgba(90, 70, 50, 0.12);
+        --c-savings: #8a7461;
+        --c-cards: #a8693a;
+        --c-loans: #8c5a4a;
+        --c-wealth: #7e7440;
+        color-scheme: light;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      :root {
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        min-height: 100%;
+        color: var(--text);
+        font:
+          16px/1.5 "Inter",
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background-color: var(--bg);
+        background-image:
+          radial-gradient(
+            900px 440px at 90% -8%,
+            rgba(200, 179, 154, 0.5),
+            transparent 62%
+          ),
+          radial-gradient(
+            800px 480px at 2% 0%,
+            rgba(224, 209, 184, 0.65),
+            transparent 62%
+          ),
+          linear-gradient(180deg, #f6f0e6 0, #faf7f2 520px);
+        background-repeat: no-repeat;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+        color: inherit;
+      }
+      :focus-visible {
+        outline: 3px solid var(--ring);
+        outline-offset: 2px;
+        border-radius: 8px;
+      }
+      svg {
+        display: block;
+      }
+      .wrap {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 0 20px 48px;
+      }
+      header.top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 24px 0 20px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--brown), var(--taupe));
+        display: grid;
+        place-items: center;
+        color: var(--ivory);
+      }
+      .brand h1 {
+        font-size: 1.4rem;
+        margin: 0;
+        line-height: 1.2;
+        color: var(--heading);
+      }
+      .brand p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin: 4px 0 22px;
+      }
+      .stat {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px 16px;
+        box-shadow: var(--shadow);
+      }
+      .stat b {
+        display: block;
+        font-size: 1.6rem;
+        line-height: 1.2;
+        color: var(--heading);
+      }
+      .stat span {
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tab {
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: 999px;
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text);
+        transition:
+          background 0.18s,
+          color 0.18s,
+          border-color 0.18s;
+      }
+      .tab:hover {
+        background: var(--oat);
+      }
+      .tab[aria-pressed="true"] {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--on-primary);
+      }
+      .tab small {
+        opacity: 0.85;
+        margin-left: 6px;
+        font-weight: 600;
+      }
+      .filters {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        flex: 1 1 320px;
+        justify-content: flex-end;
+      }
+      .field {
+        position: relative;
+        flex: 1 1 200px;
+        max-width: 320px;
+      }
+      .field label {
+        position: absolute;
+        left: -9999px;
+      }
+      .field input,
+      .field select {
+        width: 100%;
+        min-height: 44px;
+        padding: 0 14px;
+        border: 1px solid var(--border-strong);
+        border-radius: 12px;
+        background: #fff;
+        color: var(--text);
+      }
+      .field input::placeholder {
+        color: var(--muted);
+      }
+      .field input {
+        padding-left: 42px;
+      }
+      .field .mag {
+        position: absolute;
+        left: 13px;
+        top: 12px;
+        color: var(--muted);
+        pointer-events: none;
+      }
+      .count {
+        color: var(--muted);
+        font-size: 0.875rem;
+        margin: 0 0 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .card {
+        background: #faf7f2;
+        border: 1px solid var(--border);
+        border-top: 4px solid var(--cat);
+        border-radius: 16px;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+      }
+      .card-head {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .chip-ico {
+        width: 42px;
+        height: 42px;
+        flex: none;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        color: var(--cat);
+        background: var(--surface-2);
+      }
+      .card h2 {
+        font-size: 1.05rem;
+        margin: 0;
+        line-height: 1.3;
+        color: var(--heading);
+      }
+      .cat {
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+      .badge {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        white-space: nowrap;
+        background: var(--ivory);
+        border: 1px solid currentColor;
+      }
+      .badge::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .s-active {
+        color: #47633f;
+      }
+      .s-available {
+        color: var(--brown);
+      }
+      .s-due {
+        color: #9a3f25;
+        background: #f6dfd2;
+      }
+      .s-pending {
+        color: #765f1d;
+        border-style: dashed;
+      }
+      .card p.blurb {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 0;
+      }
+      .metrics div {
+        background: var(--surface-2);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+      .metrics dt {
+        color: var(--muted);
+        font-size: 0.8125rem;
+      }
+      .metrics dd {
+        margin: 2px 0 0;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--heading);
+      }
+      .btn {
+        margin-top: auto;
+        min-height: 44px;
+        border-radius: 12px;
+        border: 1px solid var(--brown);
+        background: transparent;
+        color: var(--brown);
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+          background 0.18s,
+          color 0.18s,
+          filter 0.18s;
+      }
+      .btn:hover {
+        background: var(--brown);
+        color: var(--ivory);
+      }
+      .btn.primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--on-primary);
+      }
+      .btn.primary:hover {
+        filter: brightness(1.15);
+      }
+      .empty {
+        text-align: center;
+        padding: 48px 16px;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px dashed var(--border-strong);
+        border-radius: 16px;
+      }
+      dialog {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--ivory);
+        color: var(--text);
+        padding: 0;
+        width: min(480px, calc(100% - 32px));
+        box-shadow: 0 24px 60px rgba(58, 46, 37, 0.35);
+      }
+      dialog::backdrop {
+        background: rgba(58, 46, 37, 0.55);
+      }
+      .dlg {
+        padding: 22px;
+      }
+      .dlg h2 {
+        margin: 0 0 4px;
+        color: var(--heading);
+      }
+      .dlg p {
+        color: var(--muted);
+        margin: 0 0 14px;
+      }
+      .dlg dl {
+        margin: 0 0 18px;
+        display: grid;
+        gap: 8px;
+      }
+      .dlg dl div {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 8px;
+      }
+      .dlg dt {
+        color: var(--muted);
+      }
+      .dlg dd {
+        margin: 0;
+        font-weight: 600;
+        text-align: right;
+      }
+      .dlg .row {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+      .dlg .btn {
+        margin: 0;
+        padding: 0 18px;
+      }
+      footer {
+        color: var(--muted);
+        font-size: 0.8125rem;
+        text-align: center;
+        margin-top: 32px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+        .card:hover {
+          transform: none;
+        }
+      }
+      @media (max-width: 560px) {
+        .wrap {
+          padding: 0 14px 40px;
+        }
+        .filters {
+          justify-content: stretch;
+        }
+        .field {
+          max-width: none;
+        }
+        .tabs {
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          padding-bottom: 4px;
+          width: 100%;
+        }
+        .tab {
+          flex: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 10l9-6 9 6" />
+              <path d="M5 10v8M10 10v8M14 10v8M19 10v8" />
+              <path d="M3 21h18" />
+            </svg>
+          </div>
+          <div>
+            <h1>Banking Products Dashboard</h1>
+            <p>All your accounts, cards, loans and investments in one place</p>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section
+          class="stats"
+          id="stats"
+          aria-label="Portfolio summary"
+        ></section>
+
+        <section class="toolbar" aria-label="Filter products">
+          <div
+            class="tabs"
+            id="tabs"
+            role="group"
+            aria-label="Product category"
+          ></div>
+          <div class="filters">
+            <div class="field">
+              <label for="q">Search products</label>
+              <svg
+                class="mag"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input
+                id="q"
+                type="search"
+                placeholder="Search products"
+                autocomplete="off"
+              />
+            </div>
+            <div class="field">
+              <label for="st">Filter by status</label>
+              <select id="st"></select>
+            </div>
+          </div>
+        </section>
+
+        <p class="count" id="count" aria-live="polite"></p>
+        <ul class="grid" id="grid"></ul>
+        <div class="empty" id="empty" hidden>
+          No products match your filters. Try another category or clear the
+          search.
+        </div>
+      </main>
+      <footer>
+        Demo data only. No real accounts or transactions are shown.
+      </footer>
+    </div>
+
+    <dialog id="dlg" aria-labelledby="dlgTitle">
+      <div class="dlg" id="dlgBody"></div>
+    </dialog>
+
+    <script>
+      /*DATA LAYER – hard-coded records and a mocked API call*/
+      const CATEGORIES = {
+        savings: "Savings",
+        cards: "Credit Cards",
+        loans: "Loans",
+        wealth: "Wealth",
+      };
+      const STATUSES = {
+        active: "Active",
+        available: "Available",
+        due: "Payment due",
+        pending: "Under review",
+      };
+
+      const PRODUCT_DATA = [
+        {
+          id: "sv-5",
+          name: "Flexi Savings Account",
+          category: "savings",
+          status: "active",
+          cta: "View Details",
+          blurb:
+            "Save your money, earn interest and withdraw whenever you need.",
+          metrics: [
+            { label: "Interest rate", value: "4.5% p.a." },
+            { label: "Balance", value: "₹92,500" },
+          ],
+          details: [
+            ["Account type", "Regular Savings"],
+            ["Interest paid", "Monthly"],
+            ["Withdrawals", "Unlimited"],
+          ],
+        },
+        {
+          id: "sv-6",
+          name: "Golden Future Deposit",
+          category: "savings",
+          status: "available",
+          cta: "View Details",
+          blurb:
+            "Deposit money for a fixed period and earn interest on your savings.",
+          metrics: [
+            { label: "Interest rate", value: "7.3% p.a." },
+            { label: "Min. deposit", value: "₹20,000" },
+          ],
+          details: [
+            ["Term", "24 months"],
+            ["Interest paid", "Quarterly"],
+            ["Early withdrawal", "Penalty applicable"],
+          ],
+        },
+        {
+          id: "cc-5",
+          name: "Signature Travel Card",
+          category: "cards",
+          status: "active",
+          cta: "View Details",
+          blurb:
+            "Enjoy travel rewards, airport lounge access and special travel offers.",
+          metrics: [
+            { label: "Available limit", value: "₹2,10,000" },
+            { label: "Next due", value: "25 Nov 2026" },
+          ],
+          details: [
+            ["Total limit", "₹3,50,000"],
+            ["Amount due", "₹24,600"],
+            ["Reward points", "15,200"],
+          ],
+        },
+        {
+          id: "cc-6",
+          name: "Smart Shopper Card",
+          category: "cards",
+          status: "due",
+          cta: "Pay Now",
+          blurb:
+            "Your credit card payment is due soon. Pay on time to avoid extra charges.",
+          metrics: [
+            { label: "Amount due", value: "₹8,750" },
+            { label: "Payment due date", value: "12 Nov 2026" },
+          ],
+          details: [
+            ["Total limit", "₹1,50,000"],
+            ["Minimum due", "₹875"],
+            ["Payment status", "Pending"],
+          ],
+        },
+        {
+          id: "ln-5",
+          name: "Education Support Loan",
+          category: "loans",
+          status: "active",
+          cta: "View Details",
+          blurb:
+            "Manage your education expenses with a loan and easy monthly payments.",
+          metrics: [
+            { label: "Outstanding", value: "₹8,50,000" },
+            { label: "Next EMI", value: "15 Dec 2026" },
+          ],
+          details: [
+            ["Interest rate", "9.2% p.a."],
+            ["EMI", "₹12,500"],
+            ["Tenure left", "8 years"],
+          ],
+        },
+        {
+          id: "ln-6",
+          name: "Vehicle Finance Loan",
+          category: "loans",
+          status: "pending",
+          cta: "View Details",
+          blurb:
+            "Your vehicle loan application is being checked. You will receive an update soon.",
+          metrics: [
+            { label: "Requested", value: "₹6,00,000" },
+            { label: "Interest rate", value: "9.8% p.a." },
+          ],
+          details: [
+            ["Tenure", "60 months"],
+            ["Stage", "Document verification"],
+            ["Decision by", "14 Nov 2026"],
+          ],
+        },
+        {
+          id: "wl-5",
+          name: "Bluechip Equity Fund",
+          category: "wealth",
+          status: "active",
+          cta: "View Details",
+          blurb:
+            "Invest in well-known companies and aim to grow your money over time.",
+          metrics: [
+            { label: "Current value", value: "₹4,75,800" },
+            { label: "1-year return", value: "+12.8%" },
+          ],
+          details: [
+            ["Risk level", "High"],
+            ["SIP amount", "₹4,000 / month"],
+            ["Units held", "1,105.5"],
+          ],
+        },
+        {
+          id: "wl-6",
+          name: "Monthly Income Plan",
+          category: "wealth",
+          status: "available",
+          cta: "View Details",
+          blurb:
+            "Choose an investment plan that aims to provide regular monthly income.",
+          metrics: [
+            { label: "Expected return", value: "7.2% p.a." },
+            { label: "Min. investment", value: "₹50,000" },
+          ],
+          details: [
+            ["Investment type", "Debt-oriented fund"],
+            ["Payout", "Monthly"],
+            ["Risk level", "Moderate"],
+          ],
+        },
+        {
+          id: "wl-7",
+          name: "Retirement Secure Plan",
+          category: "wealth",
+          status: "active",
+          cta: "View Details",
+          blurb:
+            "Save regularly today to build a comfortable fund for your retirement.",
+          metrics: [
+            { label: "Current value", value: "₹6,25,000" },
+            { label: "Annual contribution", value: "₹60,000" },
+          ],
+          details: [
+            ["Investment horizon", "15 years"],
+            ["Risk level", "Moderate"],
+            ["Plan type", "Long-term retirement"],
+          ],
+        },
+      ];
+
+      /* Mock API: returns JSON-shaped data.*/
+      function fetchProducts() {
+        return new Promise((resolve) =>
+          setTimeout(
+            () => resolve(JSON.parse(JSON.stringify(PRODUCT_DATA))),
+            250,
+          ),
+        );
+      }
+
+      /*UI LAYER – rendering and interaction*/
+      const $ = (id) => document.getElementById(id);
+      const state = { items: [], category: "all", status: "all", query: "" };
+
+      const ICONS = {
+        savings:
+          '<path d="M19 9a7 7 0 0 0-13-2H4v3a5 5 0 0 0 2 3v4h3v-2h4v2h3v-4a6 6 0 0 0 3-4z"/><path d="M15 9h.01"/>',
+        cards:
+          '<rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/>',
+        loans:
+          '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+        wealth: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+      };
+      const svg = (name, s = 22) =>
+        `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+
+      function visible() {
+        const q = state.query.trim().toLowerCase();
+        return state.items.filter(
+          (p) =>
+            (state.category === "all" || p.category === state.category) &&
+            (state.status === "all" || p.status === state.status) &&
+            (!q ||
+              (p.name + " " + p.blurb + " " + CATEGORIES[p.category])
+                .toLowerCase()
+                .includes(q)),
+        );
+      }
+
+      function renderStats() {
+        const n = (c) => state.items.filter((p) => p.category === c).length;
+        const active = state.items.filter((p) => p.status === "active").length;
+        const due = state.items.filter(
+          (p) => p.status === "due" || p.status === "pending",
+        ).length;
+        $("stats").innerHTML = [
+          [state.items.length, "Total products"],
+          [active, "Active now"],
+          [due, "Need attention"],
+          [n("wealth") + n("savings"), "Saving &amp; investing"],
+        ]
+          .map(
+            ([v, l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`,
+          )
+          .join("");
+      }
+
+      function renderTabs() {
+        const all = [["all", "All products"], ...Object.entries(CATEGORIES)];
+        $("tabs").innerHTML = all
+          .map(([key, label]) => {
+            const n =
+              key === "all"
+                ? state.items.length
+                : state.items.filter((p) => p.category === key).length;
+            return `<button class="tab" type="button" data-cat="${key}" aria-pressed="${state.category === key}">${label}<small>${n}</small></button>`;
+          })
+          .join("");
+      }
+
+      function renderStatusSelect() {
+        $("st").innerHTML =
+          `<option value="all">All statuses</option>` +
+          Object.entries(STATUSES)
+            .map(([k, v]) => `<option value="${k}">${v}</option>`)
+            .join("");
+      }
+
+      function cardHTML(p) {
+        const metrics = p.metrics
+          .map(
+            (m) =>
+              `<div><dt>${esc(m.label)}</dt><dd>${esc(m.value)}</dd></div>`,
+          )
+          .join("");
+        const primary = p.cta !== "View Details" ? " primary" : "";
+        return `<li class="card" style="--cat:var(--c-${p.category})">
+    <div class="card-head">
+      <div class="chip-ico">${svg(p.category)}</div>
+      <div><h2>${esc(p.name)}</h2><span class="cat">${CATEGORIES[p.category]}</span></div>
+      <span class="badge s-${p.status}">${STATUSES[p.status]}</span>
+    </div>
+    <p class="blurb">${esc(p.blurb)}</p>
+    <dl class="metrics">${metrics}</dl>
+    <button class="btn${primary}" type="button" data-id="${p.id}" aria-label="${esc(p.cta)}: ${esc(p.name)}">${esc(p.cta)}</button>
+  </li>`;
+      }
+
+      function render() {
+        const list = visible();
+        $("grid").innerHTML = list.map(cardHTML).join("");
+        $("empty").hidden = list.length > 0;
+        $("count").textContent =
+          `Showing ${list.length} of ${state.items.length} products`;
+        renderTabs();
+      }
+
+      function openDialog(id) {
+        const p = state.items.find((x) => x.id === id);
+        if (!p) return;
+        const action = p.cta !== "View Details";
+        $("dlgBody").innerHTML =
+          `<h2 id="dlgTitle">${action ? esc(p.cta) + ": " : ""}${esc(p.name)}</h2>
+    <p>${esc(p.blurb)}</p>
+    <dl>${p.details.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+    <div class="row"><button class="btn" type="button" data-close>Close</button>
+    ${action ? `<button class="btn primary" type="button" data-close>Continue to payment</button>` : ""}</div>`;
+        $("dlg").showModal();
+      }
+
+      /* events */
+      $("tabs").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-cat]");
+        if (b) {
+          state.category = b.dataset.cat;
+          render();
+        }
+      });
+      $("q").addEventListener("input", (e) => {
+        state.query = e.target.value;
+        render();
+      });
+      $("st").addEventListener("change", (e) => {
+        state.status = e.target.value;
+        render();
+      });
+      $("grid").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-id]");
+        if (b) openDialog(b.dataset.id);
+      });
+      $("dlg").addEventListener("click", (e) => {
+        if (e.target.closest("[data-close]") || e.target === $("dlg"))
+          $("dlg").close();
+      });
+
+      /* start-up */
+      renderStatusSelect();
+      $("grid").setAttribute("aria-busy", "true");
+      $("count").textContent = "Loading products…";
+      fetchProducts().then((items) => {
+        state.items = items;
+        $("grid").removeAttribute("aria-busy");
+        renderStats();
+        render();
+      });
+    </script>
+  </body>
+</html>
